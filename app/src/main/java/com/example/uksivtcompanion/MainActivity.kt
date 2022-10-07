@@ -32,8 +32,8 @@ class MainActivity : ComponentActivity() {
 
     sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon : ImageVector) {
         object Home : Screen("profile", R.string.home, Icons.Filled.Home)
-        object Schedule : Screen("friendslist", R.string.schedule, Icons.Filled.List)
-        object Diary : Screen("friendslist", R.string.diary, Icons.Filled.Edit)
+        object Schedule : Screen("schedule", R.string.schedule, Icons.Filled.List)
+        object Diary : Screen("diary", R.string.diary, Icons.Filled.Edit)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
