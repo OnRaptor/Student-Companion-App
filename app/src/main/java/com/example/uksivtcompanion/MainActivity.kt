@@ -1,23 +1,18 @@
 package com.example.uksivtcompanion
 
-import android.graphics.drawable.Icon
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
@@ -44,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 Scaffold(
                     topBar = {
-                             TopAppBar(title = { Text("Uksivt Companion") },
+                             SmallTopAppBar(title = { Text("Uksivt Companion") },
                                  actions = {
                                      IconButton(onClick = { /*TODO*/ }) {
                                          Icon(Icons.Rounded.Settings, contentDescription = null)
@@ -53,11 +48,11 @@ class MainActivity : ComponentActivity() {
                              )
                     },
                     bottomBar = {
-                        BottomNavigation {
+                        NavigationBar() {
                             val navBackStackEntry by navController.currentBackStackEntryAsState()
                             val currentDestination = navBackStackEntry?.destination
                             screens.forEach { screen ->
-                                BottomNavigationItem(
+                                NavigationBarItem(
                                     icon = { Icon(screen.icon, contentDescription = null) },
                                     label = { Text(stringResource(screen.resourceId)) },
                                     selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,

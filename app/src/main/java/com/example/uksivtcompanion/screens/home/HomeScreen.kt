@@ -1,13 +1,10 @@
 package com.example.uksivtcompanion.screens.home
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -16,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.uksivtcompanion.R
+
 
 @Composable
 fun HomeScreen(){
@@ -45,12 +42,13 @@ fun HomeScreen(){
 
 @Composable
 fun ScheduleWidget(){
-    Card(modifier = Modifier
+    Surface(modifier = Modifier
         .fillMaxWidth()
         .padding(10.dp)
         .clickable { },
-        elevation = 10.dp
-        ) {
+        shadowElevation = 10.dp,
+        tonalElevation = 10.dp
+    ) {
         Column(Modifier.padding(8.dp),horizontalAlignment = Alignment.CenterHorizontally) {
             Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween){
                 IconButton(onClick = { /*TODO*/ }) {
@@ -62,7 +60,6 @@ fun ScheduleWidget(){
                     Icon(Icons.Filled.KeyboardArrowRight, contentDescription = null)
                 }
             }
-            Divider()
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
                 Text("Русский")
                 Text("9:30")
@@ -81,11 +78,13 @@ fun ScheduleWidget(){
 
 @Composable
 fun DiaryWidget(){
-    Card(modifier = Modifier
+    Surface(modifier = Modifier
         .fillMaxWidth()
         .padding(10.dp)
         .clickable { },
-        elevation = 10.dp
+        shadowElevation = 10.dp,
+        tonalElevation = 10.dp
+
     ) {
         Column(Modifier.padding(8.dp),horizontalAlignment = Alignment.CenterHorizontally) {
             Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween){
@@ -98,7 +97,6 @@ fun DiaryWidget(){
                     Icon(Icons.Filled.KeyboardArrowRight, contentDescription = null)
                 }
             }
-            Divider()
 
             DiaryWriteItem()
             DiaryWriteItem()
@@ -112,11 +110,12 @@ fun DiaryWidget(){
 
 @Composable
 fun ReplacesWidget(){
-    Card(modifier = Modifier
+    Surface(modifier = Modifier
         .fillMaxWidth()
         .padding(10.dp)
         .clickable { },
-        elevation = 10.dp
+        shadowElevation = 10.dp,
+        tonalElevation = 10.dp
     ) {
         Column(Modifier.padding(8.dp),horizontalAlignment = Alignment.CenterHorizontally) {
             Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween){
@@ -129,7 +128,6 @@ fun ReplacesWidget(){
                     Icon(Icons.Filled.KeyboardArrowRight, contentDescription = null)
                 }
             }
-            Divider()
             ReplaceableItem()
             ReplaceableItem()
             ReplaceableItem()
