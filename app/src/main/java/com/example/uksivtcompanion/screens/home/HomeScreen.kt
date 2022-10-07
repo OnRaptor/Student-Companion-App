@@ -22,10 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.uksivtcompanion.R
-import java.lang.Float
 
 @Composable
 fun HomeScreen(){
@@ -156,10 +156,10 @@ fun DiaryWriteItem(){
     Row(Modifier.padding(5.dp)){
         var isExpanded: Boolean by remember { mutableStateOf(false)}
         Text("Математика: ", modifier = Modifier.width(100.dp), maxLines = 1)
-        Text("Пукнуть пукнуть пакакть Пукнуть пукнуть пакакть Пукнуть пукнуть пакакть Пукнуть пукнуть пакакть Пукнуть пукнуть пакакть",
+        Text("Сделать 120 номер + подготовиться к кр по дифф уравнениям",
             maxLines = if (isExpanded) 4 else 1,
             modifier = Modifier.clickable { isExpanded = !isExpanded },
-
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
