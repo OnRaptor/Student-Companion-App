@@ -21,6 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
+import com.example.uksivtcompanion.screens.diary.DiaryScreen
+import com.example.uksivtcompanion.screens.home.HomeScreen
+import com.example.uksivtcompanion.screens.schedule.ScheduleScreen
 import com.example.uksivtcompanion.ui.theme.UksivtCompanionTheme
 
 
@@ -79,9 +82,9 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
-                        composable(Screen.Home.route) { }
-                        composable(Screen.Schedule.route) { }
-                        composable(Screen.Diary.route) { }
+                        composable(Screen.Home.route) { HomeScreen() }
+                        composable(Screen.Schedule.route) { ScheduleScreen() }
+                        composable(Screen.Diary.route) { DiaryScreen() }
                     }
                 }
             }
