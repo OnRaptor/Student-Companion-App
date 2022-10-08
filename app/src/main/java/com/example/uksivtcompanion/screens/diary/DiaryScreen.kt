@@ -15,68 +15,54 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextLayoutInput
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.uksivtcompanion.R
+import com.example.uksivtcompanion.screens.components.DateSwitch
 
 @Composable
-fun DiaryScreen(){
+fun DiaryScreen(navController: NavController){
     Column(Modifier.verticalScroll(rememberScrollState())
     ){
-        DateSwitch()
-        DiariesView()
+        DateSwitch(stringResource(id = R.string.diary_widget))
+        DiariesView(navController)
+        Spacer(modifier = Modifier.height(25.dp))
     }
 }
 
 @Composable
-fun DateSwitch(){
-    Surface(modifier = Modifier
+fun DiaryView(navController: NavController){
+    Card(modifier = Modifier
         .fillMaxWidth()
-        .padding(10.dp),
-        shadowElevation = 10.dp,
-        tonalElevation = 10.dp
+        .padding(18.dp)
+        .clickable { navController.navigate("diary-details") },
+        elevation = CardDefaults.cardElevation(10.dp)
     ){
-        Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween){
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(Icons.Filled.KeyboardArrowLeft, contentDescription = null)
-            }
-            Text(text = stringResource(id = R.string.diary_widget),
-                fontSize = 22.sp, fontWeight = FontWeight.Bold)
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(Icons.Filled.KeyboardArrowRight, contentDescription = null)
-            }
+        Column(Modifier.padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top) {
+            Text(modifier= Modifier.padding(4.dp),
+                text = "Математика",
+                fontWeight = FontWeight.Bold
+            )
+            Text("Подготовить доклад к день рождению пуджа ибрагимовича ыхыххы",
+                modifier = Modifier.fillMaxWidth(2f),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
         }
     }
 }
 
 @Composable
-fun DiaryView(){
-    Surface(modifier = Modifier
-        .fillMaxWidth()
-        .padding(10.dp),
-        shadowElevation = 10.dp,
-        tonalElevation = 10.dp
-    ){
-        val (text, setText) = rememberSaveable {
-            mutableStateOf("")
-        }
-
-        Column(Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
-            Text(modifier= Modifier.padding(4.dp), text = "Математика")
-            BasicTextField(value = text
-                ,onValueChange = setText
-                ,maxLines = 3
-                ,modifier = Modifier
-                    .fillMaxWidth())
-        }
+fun DiariesView(navController: NavController){
+    repeat(5) {
+        DiaryView(navController)
     }
-}
-
-@Composable
-fun DiariesView(){
-    DiaryView()
-    DiaryView()
-    DiaryView()
-    DiaryView()
 }

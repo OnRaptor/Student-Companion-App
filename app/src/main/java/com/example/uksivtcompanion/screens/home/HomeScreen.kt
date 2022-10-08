@@ -22,52 +22,49 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.uksivtcompanion.R
+import com.example.uksivtcompanion.screens.components.DateSwitch
+import com.example.uksivtcompanion.screens.components.DateSwitchInline
 
 
 @Composable
 fun HomeScreen(){
     Column(modifier = Modifier
-        .padding(8.dp)
         .verticalScroll(rememberScrollState())
-        .fillMaxHeight()){
-        Spacer(modifier = Modifier.height(25.dp))
+        .fillMaxHeight(),
+        verticalArrangement = Arrangement.SpaceBetween
+    ){
+        //Spacer(modifier = Modifier.height(25.dp))
         ScheduleWidget()
-        Spacer(modifier = Modifier.height(25.dp))
+        //Spacer(modifier = Modifier.height(25.dp))
         DiaryWidget()
-        Spacer(modifier = Modifier.height(25.dp))
+        //Spacer(modifier = Modifier.height(25.dp))
         ReplacesWidget()
-        Spacer(modifier = Modifier.height(25.dp))
+        //Spacer(modifier = Modifier.height(25.dp))
     }
 }
 
 @Composable
 fun ScheduleWidget(){
-    Surface(modifier = Modifier
+    Card(modifier = Modifier
         .fillMaxWidth()
-        .padding(10.dp)
+        .padding(18.dp)
         .clickable { },
-        shadowElevation = 10.dp,
-        tonalElevation = 10.dp
+        elevation = CardDefaults.cardElevation(10.dp),
     ) {
         Column(Modifier.padding(8.dp),horizontalAlignment = Alignment.CenterHorizontally) {
-            Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween){
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(Icons.Filled.KeyboardArrowLeft, contentDescription = null)
-                }
-                Text(text = stringResource(id = R.string.schedule_widget),
-                    fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(Icons.Filled.KeyboardArrowRight, contentDescription = null)
-                }
-            }
+            DateSwitchInline(Title = stringResource(id = R.string.schedule_widget))
+
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
                 Text("Русский")
                 Text("9:30")
             }
+            Divider()
             Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween){
                 Text("Русский")
                 Text("11:30")
             }
+            Divider()
+
             Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween){
                 Text("Русский")
                 Text("13:30")
@@ -78,30 +75,22 @@ fun ScheduleWidget(){
 
 @Composable
 fun DiaryWidget(){
-    Surface(modifier = Modifier
+    Card(modifier = Modifier
         .fillMaxWidth()
-        .padding(10.dp)
+        .padding(18.dp)
         .clickable { },
-        shadowElevation = 10.dp,
-        tonalElevation = 10.dp
-
+        elevation = CardDefaults.cardElevation(10.dp)
     ) {
         Column(Modifier.padding(8.dp),horizontalAlignment = Alignment.CenterHorizontally) {
-            Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween){
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(Icons.Filled.KeyboardArrowLeft, contentDescription = null)
-                }
-                Text(text = stringResource(id = R.string.diary_widget),
-                    fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(Icons.Filled.KeyboardArrowRight, contentDescription = null)
-                }
-            }
-
+            DateSwitchInline(Title = stringResource(id = R.string.diary_widget))
             DiaryWriteItem()
+            Divider()
             DiaryWriteItem()
+            Divider()
             DiaryWriteItem()
+            Divider()
             DiaryWriteItem()
+            Divider()
             DiaryWriteItem()
 
         }
@@ -110,27 +99,21 @@ fun DiaryWidget(){
 
 @Composable
 fun ReplacesWidget(){
-    Surface(modifier = Modifier
+    Card(modifier = Modifier
         .fillMaxWidth()
-        .padding(10.dp)
+        .padding(18.dp)
         .clickable { },
-        shadowElevation = 10.dp,
-        tonalElevation = 10.dp
+        elevation = CardDefaults.cardElevation(10.dp)
     ) {
         Column(Modifier.padding(8.dp),horizontalAlignment = Alignment.CenterHorizontally) {
-            Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween){
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(Icons.Filled.KeyboardArrowLeft, contentDescription = null)
-                }
-                Text(text = stringResource(id = R.string.replaces_widget),
-                    fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(Icons.Filled.KeyboardArrowRight, contentDescription = null)
-                }
-            }
+            DateSwitchInline(Title = stringResource(id = R.string.replaces_widget))
+
             ReplaceableItem()
+            Divider()
             ReplaceableItem()
+            Divider()
             ReplaceableItem()
+            Divider()
             ReplaceableItem()
 
         }
