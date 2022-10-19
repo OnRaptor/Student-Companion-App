@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DiaryDetailsScreen() {
+fun DiaryDetailsScreen(id:String) {
     val (text, setText) = rememberSaveable {
         mutableStateOf("")
     }

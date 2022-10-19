@@ -27,17 +27,20 @@ import com.example.uksivtcompanion.R
 import com.example.uksivtcompanion.screens.components.DateSwitch
 
 @Composable
-fun DiaryScreen(navController: NavController){
+fun DiaryScreen(navController: NavController,
+                viewModel: DiaryViewModel){
     Column(Modifier.verticalScroll(rememberScrollState())
     ){
         DateSwitch(stringResource(id = R.string.diary_widget))
-        DiariesView(navController)
+        DiariesView(navController, viewModel.getPreviewOfDiaries())
         Spacer(modifier = Modifier.height(25.dp))
     }
 }
 
 @Composable
-fun DiaryView(navController: NavController){
+fun DiaryView(navController: NavController,
+              item:DiaryItemPreview
+){
     Card(modifier = Modifier
         .fillMaxWidth()
         .padding(18.dp)
@@ -48,10 +51,10 @@ fun DiaryView(navController: NavController){
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top) {
             Text(modifier= Modifier.padding(4.dp),
-                text = "Математика",
+                text = item.title,
                 fontWeight = FontWeight.Bold
             )
-            Text("Подготовить доклад к день рождению пуджа ибрагимовича ыхыххы",
+            Text(text = item.description,
                 modifier = Modifier.fillMaxWidth(2f),
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1
@@ -61,8 +64,10 @@ fun DiaryView(navController: NavController){
 }
 
 @Composable
-fun DiariesView(navController: NavController){
-    repeat(5) {
-        DiaryView(navController)
-    }
+fun DiariesView(navController: NavController,
+                diaries:List<DiaryItemPreview>
+){
+    diaries.map { item ->
+        DiaryView(navController = navController, item = item)
+     }
 }

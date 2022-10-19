@@ -3,6 +3,7 @@ package com.example.uksivtcompanion
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,17 +19,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import androidx.navigation.navArgument
 import com.example.uksivtcompanion.screens.diary.DiaryDetailsScreen
 import com.example.uksivtcompanion.screens.diary.DiaryScreen
+import com.example.uksivtcompanion.screens.diary.DiaryViewModel
 import com.example.uksivtcompanion.screens.home.HomeScreen
 import com.example.uksivtcompanion.screens.schedule.ScheduleScreen
 import com.example.uksivtcompanion.ui.theme.UksivtCompanionTheme
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon : ImageVector) {
@@ -104,8 +111,17 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
                         composable(Screen.Home.route) { HomeScreen() }
                         composable(Screen.Schedule.route) { ScheduleScreen() }
-                        composable(Screen.Diary.route) { DiaryScreen(navController) }
-                        composable("diary-details") { DiaryDetailsScreen() }
+                        composable(Screen.Diary.route) {
+                            val diaryViewModel: DiaryViewModel = hiltViewModel()
+                            DiaryScreen(navController, diaryViewModel)
+                        }
+                        composable("diary-details/{id}",
+                            arguments = listOf(navArgument("id"){
+                                type = NavType.StringType
+                            }))
+                        {   backStackEntry ->
+                            DiaryDetailsScreen(backStackEntry.id)
+                        }
                     }
                 }
             }

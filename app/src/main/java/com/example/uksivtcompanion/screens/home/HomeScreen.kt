@@ -83,6 +83,7 @@ fun DiaryWidget(){
     ) {
         Column(Modifier.padding(8.dp),horizontalAlignment = Alignment.CenterHorizontally) {
             DateSwitchInline(Title = stringResource(id = R.string.diary_widget))
+
             DiaryWriteItem()
             Divider()
             DiaryWriteItem()
