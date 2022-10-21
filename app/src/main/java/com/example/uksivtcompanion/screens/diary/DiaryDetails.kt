@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun DiaryDetailsScreen(id:String) {
     val (text, setText) = rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf("Id of diary -> $id")
     }
     Column(Modifier.padding(10.dp, 0.dp, 10.dp, 10.dp).fillMaxHeight(),
         verticalArrangement = Arrangement.SpaceEvenly
@@ -36,7 +36,8 @@ fun DiaryDetailsScreen(id:String) {
                 .fillMaxWidth()
                 .fillMaxHeight(0.85f),//temp!! relayout later
             maxLines = Int.MAX_VALUE,
-            placeholder = { Text("Ваша заметка или задание...") }
+            placeholder = { Text("Ваша заметка или задание...")
+            }
         )
 
         Row (horizontalArrangement = Arrangement.SpaceEvenly,

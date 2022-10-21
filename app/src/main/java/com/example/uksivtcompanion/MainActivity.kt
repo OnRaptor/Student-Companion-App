@@ -1,5 +1,6 @@
 package com.example.uksivtcompanion
 
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -62,7 +63,8 @@ class MainActivity : ComponentActivity() {
                                          IconButton(onClick = { expanded = !expanded }) {
                                              Icon(Icons.Rounded.MoreVert, contentDescription = null)
                                          }
-                                         DropdownMenu(expanded = expanded,
+                                         DropdownMenu(
+                                             expanded = expanded,
                                              onDismissRequest = { expanded = false },
                                              offset = DpOffset(10.dp, 0.dp)
                                          ) {
@@ -70,6 +72,8 @@ class MainActivity : ComponentActivity() {
                                                 fontSize = 18.sp,
                                                 modifier = Modifier
                                                     .padding(8.dp)
+                                                    .fillMaxWidth()
+                                                    .height(25.dp)
                                                     .clickable {
                                                         scope.launch {
                                                             snackbarHostState.showSnackbar("Settings clicked, but ui didn't created yet(((", "I understand")
@@ -77,6 +81,17 @@ class MainActivity : ComponentActivity() {
                                                         expanded = false
                                                     }
                                                 )
+                                             Text("Выход",
+                                                 fontSize = 18.sp,
+                                                 modifier = Modifier
+                                                     .padding(8.dp)
+                                                     .fillMaxWidth()
+                                                     .height(25.dp)
+                                                     .clickable {
+                                                         stopService(intent)
+                                                         expanded = false
+                                                     }
+                                             )
                                          }
                                      }
 
@@ -115,12 +130,13 @@ class MainActivity : ComponentActivity() {
                             val diaryViewModel: DiaryViewModel = hiltViewModel()
                             DiaryScreen(navController, diaryViewModel)
                         }
-                        composable("diary-details/{id}",
+                        composable("diary-details/id={id}",
                             arguments = listOf(navArgument("id"){
                                 type = NavType.StringType
                             }))
                         {   backStackEntry ->
-                            DiaryDetailsScreen(backStackEntry.id)
+                            backStackEntry.arguments?.getString("id")
+                                ?.let { DiaryDetailsScreen(it) }
                         }
                     }
                 }
