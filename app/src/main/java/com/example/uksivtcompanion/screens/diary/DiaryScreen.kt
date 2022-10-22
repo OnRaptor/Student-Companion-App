@@ -35,7 +35,7 @@ import java.util.UUID
 @Composable
 fun DiaryScreen(navController: NavController,
                 viewModel: DiaryViewModel = hiltViewModel()){
-    Box{
+    Box(Modifier.fillMaxSize()){
         Column(Modifier.verticalScroll(rememberScrollState())
         ){
             DateSwitch(stringResource(id = R.string.diary_widget))
@@ -44,7 +44,7 @@ fun DiaryScreen(navController: NavController,
         }
         Box(modifier = Modifier.align(Alignment.BottomEnd)){
             FloatingActionButton(
-                onClick = { /*TODO*/ },
+                onClick = { viewModel.createDiaryFunc() },
                 modifier = Modifier.padding(10.dp)
             ) {
                 Icon(Icons.Rounded.Add, "", tint = Color.White)
@@ -52,7 +52,7 @@ fun DiaryScreen(navController: NavController,
         }
 
     }
-
+    viewModel.onDiaryCreateCallback = { navController.navigate("diary-details/$it") }
 }
 
 @Composable
@@ -64,7 +64,7 @@ fun DiaryView(navController: NavController,
         .padding(18.dp)
         .clickable
         {
-            navController.navigate("diary-details/id=" + UUID.randomUUID().toString())
+            navController.navigate("diary-details/" + item.uid)
         },
         elevation = CardDefaults.cardElevation(10.dp)
     ){

@@ -10,8 +10,8 @@ import androidx.compose.ui.platform.LocalContext
 import android.os.Build
 
 private val DarkColorPalette = darkColorScheme(
-    primary = Blue700,
-    primaryContainer = Blue500,
+    primary = Blue500,
+    primaryContainer = Blue700,
     secondary = Teal200
 )
 

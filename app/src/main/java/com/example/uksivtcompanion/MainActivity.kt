@@ -124,19 +124,21 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
+                        val diaryViewModel: DiaryViewModel = DiaryViewModel()
                         composable(Screen.Home.route) { HomeScreen() }
                         composable(Screen.Schedule.route) { ScheduleScreen() }
                         composable(Screen.Diary.route) {
-                            val diaryViewModel: DiaryViewModel = hiltViewModel()
                             DiaryScreen(navController, diaryViewModel)
                         }
-                        composable("diary-details/id={id}",
+                        composable("diary-details/{id}",
                             arguments = listOf(navArgument("id"){
                                 type = NavType.StringType
                             }))
                         {   backStackEntry ->
-                            backStackEntry.arguments?.getString("id")
-                                ?.let { DiaryDetailsScreen(it) }
+                            DiaryDetailsScreen(
+                                backStackEntry.arguments?.getString("id") ?: "",
+                                diaryViewModel = diaryViewModel
+                            )
                         }
                     }
                 }
