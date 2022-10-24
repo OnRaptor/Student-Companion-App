@@ -16,6 +16,7 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -50,13 +51,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val screens = listOf(Screen.Home,Screen.Schedule, Screen.Diary)
         setContent {
-            UksivtCompanionTheme {
+            UksivtCompanionTheme() {
                 val scope = rememberCoroutineScope()
                 val navController = rememberNavController()
                 val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
                 Scaffold(
                     topBar = {
-                             TopAppBar(title = { Text("Uksivt Companion") },
+                             TopAppBar(
+                                 title = { Text("Uksivt Companion")},
+                                 windowInsets = WindowInsets.waterfall,
                                  actions = {
                                      var expanded by remember { mutableStateOf(false) }
                                      Box{
@@ -88,7 +91,7 @@ class MainActivity : ComponentActivity() {
                                                      .fillMaxWidth()
                                                      .height(25.dp)
                                                      .clickable {
-                                                         stopService(intent)
+
                                                          expanded = false
                                                      }
                                              )
@@ -123,7 +126,10 @@ class MainActivity : ComponentActivity() {
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState)
                     }
                 ) { innerPadding ->
-                    NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
+                    NavHost(navController,
+                        startDestination = Screen.Home.route,
+                        Modifier.padding(innerPadding),
+                    ) {
                         val diaryViewModel: DiaryViewModel = DiaryViewModel()
                         composable(Screen.Home.route) { HomeScreen() }
                         composable(Screen.Schedule.route) { ScheduleScreen() }
@@ -136,8 +142,9 @@ class MainActivity : ComponentActivity() {
                             }))
                         {   backStackEntry ->
                             DiaryDetailsScreen(
-                                backStackEntry.arguments?.getString("id") ?: "",
-                                diaryViewModel = diaryViewModel
+                                diaryViewModel.getItemByUID(backStackEntry.arguments?.getString("id") ?: ""),
+                                diaryViewModel = diaryViewModel,
+                                navController
                             )
                         }
                     }

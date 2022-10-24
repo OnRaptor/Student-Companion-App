@@ -26,7 +26,7 @@ import com.example.uksivtcompanion.ui.theme.UksivtCompanionTheme
 @Composable
 fun ScheduleScreen(){
     Column(Modifier.verticalScroll(rememberScrollState())) {
-        DateSwitch(stringResource(id = R.string.schedule_widget))
+        DateSwitch()
         TimeSheet()
         Spacer(modifier = Modifier.height(25.dp))
     }

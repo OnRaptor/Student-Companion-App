@@ -12,8 +12,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,21 +29,27 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.uksivtcompanion.R
 import com.example.uksivtcompanion.screens.components.DateSwitch
-import java.util.UUID
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.*
 
 @Composable
 fun DiaryScreen(navController: NavController,
                 viewModel: DiaryViewModel = hiltViewModel()){
+    val date = rememberSaveable{ mutableStateOf(SimpleDateFormat("dd.MM.yyyy", Locale.US).format(Date()))}
+
     Box(Modifier.fillMaxSize()){
         Column(Modifier.verticalScroll(rememberScrollState())
         ){
-            DateSwitch(stringResource(id = R.string.diary_widget))
-            DiariesView(navController, viewModel.getPreviewOfDiaries())
+            DateSwitch(
+                date
+            )
+            DiariesView(navController, viewModel.getPreviewOfDiaries(date.value))
             Spacer(modifier = Modifier.height(25.dp))
         }
         Box(modifier = Modifier.align(Alignment.BottomEnd)){
             FloatingActionButton(
-                onClick = { viewModel.createDiaryFunc() },
+                onClick = { viewModel.createDiaryFunc(date.value) },
                 modifier = Modifier.padding(10.dp)
             ) {
                 Icon(Icons.Rounded.Add, "", tint = Color.White)
@@ -73,12 +78,14 @@ fun DiaryView(navController: NavController,
             verticalArrangement = Arrangement.Top) {
             Text(modifier= Modifier.padding(4.dp),
                 text = item.title,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2
             )
             Text(text = item.description,
                 modifier = Modifier.fillMaxWidth(2f),
                 overflow = TextOverflow.Ellipsis,
-                maxLines = 1
+                maxLines = 2
             )
         }
     }
