@@ -1,84 +1,123 @@
 package com.example.uksivtcompanion.screens.diary
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.uksivtcompanion.data.repositories.DiaryRepository
+import com.example.uksivtcompanion.screens.diary.models.DiaryEvent
+import com.example.uksivtcompanion.screens.diary.models.DiaryViewState
+import com.example.uksivtcompanion.services.EventHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.UUID
+import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
 class DiaryViewModel @Inject constructor(
+    private val diaryRepository: DiaryRepository
+) : ViewModel(), EventHandler<DiaryEvent>{
 
-) : ViewModel(){
-    private var items:MutableList<DiaryItem> = mutableListOf(
-        DiaryItem(
-            UUID.randomUUID().toString(),
-            mutableStateOf("Тестовый предмет"),
-            mutableStateOf("Предмет описания"),
-            mutableStateOf("24.10.2022")))
+    private var currentDate: Date = Calendar.getInstance().time
+    private val _diaryViewState: MutableLiveData<DiaryViewState> = MutableLiveData(DiaryViewState.Loading)
+    val diaryViewState: LiveData<DiaryViewState> = _diaryViewState
 
-    private lateinit var currentItem:DiaryItem
-
-    var onDiaryCreateCallback:(id:String) -> Unit = {}
-
-    val saveDiaryFunc:() -> Unit = {
-        items[items.indexOf(items.find { it.uid == currentItem.uid })] = currentItem
+    override fun obtainEvent(event: DiaryEvent) {
+        when (val currentState = _diaryViewState.value) {
+            is DiaryViewState.Loading -> reduce(event, currentState)
+            is DiaryViewState.Display -> reduce(event, currentState)
+            is DiaryViewState.Error -> reduce(event, currentState)
+            is DiaryViewState.NoItems -> reduce(event, currentState)
+            else -> {}
+        }
     }
 
-    val deleteDiaryFunc:() -> Unit = {
-        items.remove(items.find{it.uid == currentItem.uid})
+    private fun reduce(event : DiaryEvent, currentState: DiaryViewState.Loading){
+        when(event) {
+            DiaryEvent.EnterScreen -> fetchDiariesForDate()
+            else -> {}
+        }
     }
 
-    val markDiaryFunc:() -> Unit = {
-
-    }
-
-    fun setCurrentItem(item:DiaryItem)  {
-        currentItem = item
-    }
-
-    fun getPreviewOfDiaries(date:String =
-                                SimpleDateFormat("dd.MM.yyyy", Locale.US).format(Date()))
-    : List<DiaryItemPreview>{
-        //retrieve data from file
-        return items.mapNotNull { item ->
-            if(item.date.value == date)
-            DiaryItemPreview(
-            item.uid,
-            item.title.value,
-            item.text.value
+    private fun reduce(event : DiaryEvent, currentState: DiaryViewState.Display){
+        when (event) {
+            DiaryEvent.EnterScreen -> fetchDiariesForDate()
+            DiaryEvent.NextDayClicked -> performNextClick(currentState.hasNextDay)
+            DiaryEvent.PreviousDayClicked -> performPreviousClick()
+            is DiaryEvent.OnDiaryClick -> performDiaryClick(
+                hasNextDay = currentState.hasNextDay,
+                diaryUID = event.diaryUID
             )
-            else null
+            else -> {}
         }
     }
 
-    fun getItemByUID(uid:String):DiaryItem {
-        try {
-            return items.first { item -> item.uid == uid }
-        }
-        catch(e:NoSuchElementException){
-            return DiaryItem("", mutableStateOf(""),mutableStateOf(""),mutableStateOf(""))
+    private fun reduce(event : DiaryEvent, currentState: DiaryViewState.Error){
+        when (event) {
+            DiaryEvent.ReloadScreen -> fetchDiariesForDate(needsToRefresh = true)
+            else -> {}
         }
     }
 
+    private fun reduce(event : DiaryEvent, currentState: DiaryViewState.NoItems){
+        when (event) {
+            DiaryEvent.ReloadScreen -> fetchDiariesForDate(needsToRefresh = true)
+            DiaryEvent.EnterScreen -> fetchDiariesForDate()
+            else -> {}
+        }
+    }
 
+    private fun performDiaryClick(hasNextDay: Boolean, diaryUID: String) {
 
-    fun createDiaryFunc(date: String):DiaryItem{
-        val item = DiaryItem(
-            UUID.randomUUID().toString(),
-            mutableStateOf(""),
-            mutableStateOf(""),
-            mutableStateOf(date))
-        items.add(item)
-        onDiaryCreateCallback(item.uid)
-        return item
+    }
+
+    private fun performNextClick(hasNextDay: Boolean) {
+
+    }
+
+    private fun performPreviousClick() {
+
+    }
+
+    private fun getTitleForADay(): String {
+        val calendar = Calendar.getInstance()
+        calendar.time = currentDate
+
+        val difference = Calendar.getInstance().timeInMillis - calendar.timeInMillis
+        val dateFormat = SimpleDateFormat("dd MMM", Locale.getDefault())
+
+        return when (TimeUnit.MILLISECONDS.toDays(difference)) {
+            0L -> "Today"
+            1L -> "Yesterday"
+            else -> dateFormat.format(currentDate)
+        }
+    }
+
+    private fun fetchDiariesForDate(
+        date:String = SimpleDateFormat("dd.MM.yyyy", Locale.US).format(Date()),
+        needsToRefresh: Boolean = false,
+        setHasNextDay: Boolean = false){
+        if (needsToRefresh) {
+            _diaryViewState.postValue(DiaryViewState.Loading)
+        }
+        viewModelScope.launch {
+            try{
+                val diaries = diaryRepository.fetchDiariesForDate(date)
+                if (diaries.isNotEmpty())
+                    _diaryViewState.postValue(DiaryViewState.Display(
+                        items = diaries,
+                        hasNextDay = setHasNextDay,
+                        title = getTitleForADay()
+                    ))
+                else
+                    _diaryViewState.postValue(DiaryViewState.NoItems)
+            }
+            catch (e:java.lang.Exception){
+                _diaryViewState.postValue(DiaryViewState.Error)
+            }
+
+        }
     }
 }
-
-data class DiaryItemPreview(val uid: String,val title:String, val description:String)
-data class DiaryItem(val uid:String, var title:MutableState<String>, var text:MutableState<String>,
-                     var date:MutableState<String>)

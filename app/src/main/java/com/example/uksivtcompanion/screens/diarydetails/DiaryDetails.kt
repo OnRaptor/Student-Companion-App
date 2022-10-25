@@ -2,10 +2,15 @@ package com.example.uksivtcompanion.screens.diary
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,18 +19,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.uksivtcompanion.data.entities.DiaryItem
 import com.example.uksivtcompanion.screens.components.DateSwitch
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import com.example.uksivtcompanion.screens.diarydetails.DetailsViewModel
+import com.example.uksivtcompanion.screens.diarydetails.models.DetailsEvent
+import java.text.SimpleDateFormat
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DiaryDetailsScreen(item:DiaryItem,
-                       diaryViewModel: DiaryViewModel = hiltViewModel(),
+fun DiaryDetailsScreen(uid:String = UUID.randomUUID().toString(),
+                       detailsViewModel: DetailsViewModel,
                        navController:NavController
 ) {
+    val item = DiaryItem(
+        uid,
+        remember{mutableStateOf("")},
+        remember{mutableStateOf("")},
+        remember{mutableStateOf(SimpleDateFormat("dd.MM.yyyy", Locale.US).format(Date()))}
+    )
+    val viewState = detailsViewModel.detailsViewState.observeAsState()
     val isEditingTitle = rememberSaveable() {
         mutableStateOf(item.title.value == "")
     }
@@ -39,7 +53,8 @@ fun DiaryDetailsScreen(item:DiaryItem,
             title = item.date
         )
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
-            if(isEditingTitle.value)
+
+            if (isEditingTitle.value)
                 OutlinedTextField(
                     value = item.title.value,
                     onValueChange = { value -> item.title.value = value },
@@ -50,6 +65,7 @@ fun DiaryDetailsScreen(item:DiaryItem,
                     label = { Text("Название") }
                 )
             else
+
             Text(
                 item.title.value,
                 fontWeight = FontWeight.SemiBold,
@@ -90,24 +106,18 @@ fun DiaryDetailsScreen(item:DiaryItem,
                 .padding(5.dp)
         ) {
             IconButton(onClick = {
-                diaryViewModel.setCurrentItem(item)
-                diaryViewModel.markDiaryFunc()
-            }) {
-                Icon(Icons.Filled.PriorityHigh, "Mark")
-            }
-            Button(onClick = {
-                diaryViewModel.setCurrentItem(item)
-                diaryViewModel.saveDiaryFunc()
-            }) {
-                Text("Сохранить", color = Color.White)
-            }
-            IconButton(onClick = {
-                diaryViewModel.setCurrentItem(item)
-                diaryViewModel.deleteDiaryFunc()
                 navController.navigate("diary")
             }) {
                 Icon(Icons.Filled.Delete, "Delete")
             }
         }
     }
+
+    LaunchedEffect(key1 = viewState, block = {
+        detailsViewModel.obtainEvent(event = DetailsEvent.EnterScreen)
+    })
+    //
+    LaunchedEffect(key1 = item, block = {
+        detailsViewModel.obtainEvent(DetailsEvent.OnSaveClick(item))
+    })
 }
