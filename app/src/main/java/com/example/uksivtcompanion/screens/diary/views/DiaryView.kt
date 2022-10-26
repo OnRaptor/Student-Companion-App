@@ -27,7 +27,7 @@ fun DiaryView(
         .padding(18.dp)
         .clickable
         {
-            navController.navigate("diary-details/" + item.uid)
+            navController.navigate("details/" + item.uid)
         },
         elevation = CardDefaults.cardElevation(10.dp)
     ){

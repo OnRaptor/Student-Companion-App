@@ -39,12 +39,13 @@ class DiaryRepository @Inject constructor(
     }
 
 
-    suspend fun deleteDiary(diary:DiaryItem){
+    suspend fun deleteDiary(uid: String){
+        val record = findByUID(uid)
         diaryDAO.delete(Diary(
-            diary.uid,
-            diary.title.value,
-            diary.text.value,
-            diary.date.value
+            record.uid,
+            record.title,
+            record.desc,
+            record.date
         ))
     }
 

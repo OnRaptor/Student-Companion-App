@@ -12,6 +12,8 @@ import com.example.uksivtcompanion.screens.diarydetails.models.DetailsViewState
 import com.example.uksivtcompanion.services.EventHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 
@@ -33,14 +35,15 @@ class DetailsViewModel @Inject constructor(
 
     private fun reduce(event : DetailsEvent, currentState: DetailsViewState.Display){
         when(event) {
-            is DetailsEvent.OnSaveClick -> performSaveClick(event.diaryItem)
+            is DetailsEvent.OnSaveClick -> performSaveClick(currentState.diaryItem)
+            is DetailsEvent.OnDeleteClick -> performDeleteClick(currentState.diaryItem)
             else -> {}
         }
     }
 
     private fun reduce(event : DetailsEvent, currentState: DetailsViewState.Loading){
         when(event) {
-            DetailsEvent.EnterScreen -> fetchDiariesByUID("")
+            is DetailsEvent.EnterScreen -> fetchDiariesByUID(event.uid)
             else -> {}
         }
     }
@@ -49,9 +52,19 @@ class DetailsViewModel @Inject constructor(
 
     }
 
-    private fun performSaveClick(diaryItem: DiaryItem){
+    private fun performSaveClick(diaryItem:DiaryItem){
         viewModelScope.launch {
+            if (diaryItem.uid == "")
+                diaryItem.uid = UUID.randomUUID().toString()
             diaryRepository.addOrUpdateDiary(diaryItem)
+        }
+    }
+
+    private fun performDeleteClick(diaryItem:DiaryItem){
+        viewModelScope.launch {
+            if (diaryItem.uid == "")
+                return@launch
+            diaryRepository.deleteDiary(diaryItem.uid)
         }
     }
 
@@ -63,7 +76,7 @@ class DetailsViewModel @Inject constructor(
                         "",
                         mutableStateOf(""),
                         mutableStateOf(""),
-                        mutableStateOf("")
+                        mutableStateOf(SimpleDateFormat("dd.MM.yyyy", Locale.US).format(Date()))
                     )
                 )
             )

@@ -102,6 +102,7 @@ class DiaryViewModel @Inject constructor(
         if (needsToRefresh) {
             _diaryViewState.postValue(DiaryViewState.Loading)
         }
+
         viewModelScope.launch {
             try{
                 val diaries = diaryRepository.fetchDiariesForDate(date)

@@ -13,7 +13,7 @@ fun DiariesView(
     LazyColumn(){
         diaries.forEach { diaryItem ->
             item  {
-            DiaryView(navController = navController, item = diaryItem)
+                DiaryView(navController = navController, item = diaryItem)
             }
         }
     }
