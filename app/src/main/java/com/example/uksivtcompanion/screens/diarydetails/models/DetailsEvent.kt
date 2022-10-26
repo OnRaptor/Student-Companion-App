@@ -6,4 +6,5 @@ sealed class DetailsEvent {
     object NextDayClicked : DetailsEvent()
     object OnSaveClick: DetailsEvent()
     object OnDeleteClick: DetailsEvent()
+    object OnDestroy: DetailsEvent()
 }

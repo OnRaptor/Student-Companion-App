@@ -13,6 +13,8 @@ import com.example.uksivtcompanion.services.EventHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
@@ -22,6 +24,8 @@ class DetailsViewModel @Inject constructor(
     private val diaryRepository: DiaryRepository
 ) : ViewModel(), EventHandler<DetailsEvent>
 {
+    private lateinit var item:DiaryItem
+    private val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault())
     private val _detailsViewState: MutableLiveData<DetailsViewState> = MutableLiveData(DetailsViewState.Loading)
     val detailsViewState: LiveData<DetailsViewState> = _detailsViewState
 
@@ -35,8 +39,14 @@ class DetailsViewModel @Inject constructor(
 
     private fun reduce(event : DetailsEvent, currentState: DetailsViewState.Display){
         when(event) {
-            is DetailsEvent.OnSaveClick -> performSaveClick(currentState.diaryItem)
-            is DetailsEvent.OnDeleteClick -> performDeleteClick(currentState.diaryItem)
+            is DetailsEvent.OnSaveClick -> performSaveClick()
+            is DetailsEvent.OnDeleteClick -> performDeleteClick()
+            is DetailsEvent.PreviousDayClicked -> performPreviousClick()
+            is DetailsEvent.NextDayClicked -> performNextClick()
+            is DetailsEvent.OnDestroy -> {
+                if (item.title.value.isEmpty() && item.text.value.isEmpty())
+                    performDeleteClick()
+            }
             else -> {}
         }
     }
@@ -48,50 +58,42 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private fun performNextDayClicked(){
-
+    private fun performNextClick() {
+        item.date.value = LocalDate.parse(item.date.value, formatter).plusDays(1).format(formatter)
+        _detailsViewState.postValue(DetailsViewState.Display(item))
     }
 
-    private fun performSaveClick(diaryItem:DiaryItem){
+    private fun performPreviousClick() {
+        item.date.value = LocalDate.parse(item.date.value, formatter).minusDays(1).format(formatter)
+        _detailsViewState.postValue(DetailsViewState.Display(item))
+    }
+
+    private fun performSaveClick(){
         viewModelScope.launch {
-            if (diaryItem.uid == "")
-                diaryItem.uid = UUID.randomUUID().toString()
-            diaryRepository.addOrUpdateDiary(diaryItem)
+            diaryRepository.addOrUpdateDiary(item)
         }
     }
 
-    private fun performDeleteClick(diaryItem:DiaryItem){
+    private fun performDeleteClick(){
         viewModelScope.launch {
-            if (diaryItem.uid == "")
-                return@launch
-            diaryRepository.deleteDiary(diaryItem.uid)
+            diaryRepository.deleteDiary(item.uid)
         }
     }
 
-    private fun fetchDiariesByUID(uid:String){
-        if (uid.isEmpty()) {
-            _detailsViewState.postValue(
-                DetailsViewState.Display(
-                    DiaryItem(
-                        "",
-                        mutableStateOf(""),
-                        mutableStateOf(""),
-                        mutableStateOf(SimpleDateFormat("dd.MM.yyyy", Locale.US).format(Date()))
-                    )
-                )
-            )
+    private fun fetchDiariesByUID(uid:String?){
+        if (uid == null)
             return
-        }
         viewModelScope.launch {
             try {
                 val record = diaryRepository.findByUID(uid)
+                item = DiaryItem(
+                    record.uid,
+                    mutableStateOf(record.title),
+                    mutableStateOf(record.desc),
+                    mutableStateOf(record.date)
+                )
                 _detailsViewState.postValue(DetailsViewState.Display(
-                    DiaryItem(
-                        record.uid,
-                        mutableStateOf(record.title),
-                        mutableStateOf(record.desc),
-                        mutableStateOf(record.date)
-                    )
+                    item
                 ))
             }
             catch (e:Exception){

@@ -28,11 +28,6 @@ fun NavGraphBuilder.diaryFlow(
             )
         }
 
-        composable("details"){
-            val detailsViewModel = hiltViewModel<DetailsViewModel>()
-            DiaryDetailsScreen(navController = navController, detailsViewModel = detailsViewModel)
-        }
-
         composable("details/{id}",
             listOf(navArgument("id") { type = NavType.StringType })
         ){ backStackEntry ->

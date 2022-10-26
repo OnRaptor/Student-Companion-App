@@ -56,6 +56,30 @@ fun DateSwitch(
 }
 
 @Composable
+fun DateSwitch(
+    title: MutableState<String>,
+    onPrevDayClick: () -> Unit,
+    onNextDayClick: () -> Unit
+){
+    Card(modifier = Modifier
+        .fillMaxWidth()
+        .padding(18.dp, 7.dp, 18.dp, 0.dp),
+        elevation = CardDefaults.cardElevation(10.dp)
+    ){
+        Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween){
+            IconButton(onClick = onPrevDayClick) {
+                Icon(Icons.Filled.ArrowLeft, contentDescription = null)
+            }
+            Text(text = title.value,
+                fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            IconButton(onClick = onNextDayClick) {
+                Icon(Icons.Filled.ArrowRight, contentDescription = null)
+            }
+        }
+    }
+}
+
+@Composable
 fun DateSwitchInline(Title: String){
     Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween){
         IconButton(onClick = { /*TODO*/ }) {

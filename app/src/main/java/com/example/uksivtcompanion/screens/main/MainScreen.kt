@@ -91,7 +91,6 @@ fun MainScreen(
                                 popUpTo(childNavController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
-
                                 launchSingleTop = true
                                 restoreState = true
                             }

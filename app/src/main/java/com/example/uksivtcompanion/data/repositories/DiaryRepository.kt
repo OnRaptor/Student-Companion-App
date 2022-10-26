@@ -20,9 +20,10 @@ class DiaryRepository @Inject constructor(
         else null
     }
 
+
+
     suspend fun addOrUpdateDiary(diary:DiaryItem){
-        val records = fetchDiariesForDate(diary.date.value)
-        if (records.find { it.uid == diary.uid } == null)
+        if (diaryDAO.findByUID(diary.uid) == null)
             diaryDAO.insertAll(Diary(
                 diary.uid,
                 diary.title.value,
@@ -50,6 +51,6 @@ class DiaryRepository @Inject constructor(
     }
 
     suspend fun findByUID(uid:String) : Diary{
-        return diaryDAO.findByUID(uid)
+        return diaryDAO.findByUID(uid) ?: throw NoSuchElementException()
     }
 }

@@ -12,7 +12,7 @@ interface DiaryDAO {
     fun getAllByDate(dateToFind:String): List<Diary>
 
     @Query("SELECT * FROM diary WHERE uid LIKE :uid")
-    fun findByUID(uid:String): Diary
+    fun findByUID(uid:String): Diary?
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(entity: Diary)

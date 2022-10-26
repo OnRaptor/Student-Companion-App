@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -22,7 +23,9 @@ import com.example.uksivtcompanion.screens.components.DateSwitch
 fun DetailsView(
     item:DiaryItem,
     onSaveClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    onPrevDayClick: () -> Unit,
+    onNextDayClick: () -> Unit
 ) {
     Column(
         Modifier
@@ -43,7 +46,7 @@ fun DetailsView(
                                 .height(60.dp),
                             singleLine = true,
                             label = { Text("Название") },
-                            textStyle = TextStyle().copy(fontSize = 12.sp)
+                            textStyle = TextStyle().copy(fontSize = 14.sp)
                 )
                     else
                         Text(
@@ -73,7 +76,13 @@ fun DetailsView(
                     )
                     DropdownMenuItem(
                         text = { Text("Сохранить") },
-                        onClick = onSaveClick
+                        onClick = {
+                            if (item.title.value.isEmpty() && item.text.value.isEmpty())
+                                return@DropdownMenuItem
+
+                            onSaveClick()
+                            setExpanded(false)
+                        }
                     )
                     DropdownMenuItem(
                         text = { Text("Удалить") },
@@ -83,7 +92,9 @@ fun DetailsView(
             }
         )
         DateSwitch(
-            title = item.date
+            title = item.date,
+            onPrevDayClick = onPrevDayClick,
+            onNextDayClick = onNextDayClick
         )
 
         Divider(Modifier.padding(5.dp))
@@ -98,5 +109,7 @@ fun DetailsView(
             },
             colors = TextFieldDefaults.textFieldColors(focusedIndicatorColor = Color.Blue)
         )
+
+
     }
 }
