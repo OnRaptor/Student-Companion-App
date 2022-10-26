@@ -1,5 +1,6 @@
 package com.example.uksivtcompanion.screens.diarydetails
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,14 +27,12 @@ class DetailsViewModel @Inject constructor(
         when (val currentState = _detailsViewState.value) {
             is DetailsViewState.Loading -> reduce(event, currentState)
             is DetailsViewState.Display -> reduce(event, currentState)
-
             else -> {}
         }
     }
 
     private fun reduce(event : DetailsEvent, currentState: DetailsViewState.Display){
         when(event) {
-            DetailsEvent.EnterScreen -> fetchDiariesByUID("")
             is DetailsEvent.OnSaveClick -> performSaveClick(event.diaryItem)
             else -> {}
         }
@@ -52,15 +51,40 @@ class DetailsViewModel @Inject constructor(
 
     private fun performSaveClick(diaryItem: DiaryItem){
         viewModelScope.launch {
-            diaryRepository.addNewDiary(diaryItem)
+            diaryRepository.addOrUpdateDiary(diaryItem)
         }
     }
 
     private fun fetchDiariesByUID(uid:String){
-        if (uid.isEmpty())
+        if (uid.isEmpty()) {
+            _detailsViewState.postValue(
+                DetailsViewState.Display(
+                    DiaryItem(
+                        "",
+                        mutableStateOf(""),
+                        mutableStateOf(""),
+                        mutableStateOf("")
+                    )
+                )
+            )
             return
+        }
+        viewModelScope.launch {
+            try {
+                val record = diaryRepository.findByUID(uid)
+                _detailsViewState.postValue(DetailsViewState.Display(
+                    DiaryItem(
+                        record.uid,
+                        mutableStateOf(record.title),
+                        mutableStateOf(record.desc),
+                        mutableStateOf(record.date)
+                    )
+                ))
+            }
+            catch (e:Exception){
 
-
+            }
+        }
     }
 
 }

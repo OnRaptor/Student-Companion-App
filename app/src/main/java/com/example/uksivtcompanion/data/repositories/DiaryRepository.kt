@@ -20,23 +20,24 @@ class DiaryRepository @Inject constructor(
         else null
     }
 
-    suspend fun addNewDiary(diary:DiaryItem){
-        diaryDAO.insertAll(Diary(
-            diary.uid,
-            diary.title.value,
-            diary.text.value,
-            diary.date.value
-        ))
+    suspend fun addOrUpdateDiary(diary:DiaryItem){
+        val records = fetchDiariesForDate(diary.date.value)
+        if (records.find { it.uid == diary.uid } == null)
+            diaryDAO.insertAll(Diary(
+                diary.uid,
+                diary.title.value,
+                diary.text.value,
+                diary.date.value
+            ))
+        else
+            diaryDAO.update(Diary(
+                diary.uid,
+                diary.title.value,
+                diary.text.value,
+                diary.date.value
+            ))
     }
 
-    suspend fun updateDiary(diary:DiaryItem){
-        diaryDAO.update(Diary(
-            diary.uid,
-            diary.title.value,
-            diary.text.value,
-            diary.date.value
-        ))
-    }
 
     suspend fun deleteDiary(diary:DiaryItem){
         diaryDAO.delete(Diary(
@@ -45,5 +46,9 @@ class DiaryRepository @Inject constructor(
             diary.text.value,
             diary.date.value
         ))
+    }
+
+    suspend fun findByUID(uid:String) : Diary{
+        return diaryDAO.findByUID(uid)
     }
 }

@@ -2,11 +2,11 @@ package com.example.uksivtcompanion.screens.diary
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.NoCell
 import androidx.compose.material.icons.filled.NotAccessible
+import androidx.compose.material.icons.outlined.NoCell
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -42,7 +42,7 @@ fun DiaryScreen(navController: NavController,
                  DiaryViewState.Error -> {
                      Box(Modifier.fillMaxSize()){
                          Text(
-                             text = "Error while fetching date from db",
+                             text = "Ачибка😞",
                              color = Color.Red,
                              modifier = Modifier.align(Alignment.Center)
                          )
@@ -50,14 +50,17 @@ fun DiaryScreen(navController: NavController,
                  }
                  DiaryViewState.NoItems -> {
                      Box(Modifier.fillMaxSize()){
-                         Row(
-                             modifier = Modifier.align(Alignment.Center)
-                         ){
-                             Text(
-                                 text = "No Items",
-                                 color = Color.Gray
-                             )
-                             Icon(Icons.Filled.NotAccessible, contentDescription = "No items")
+                         Column(modifier = Modifier.align(Alignment.Center)) {
+                             Row{
+                                 Icon(Icons.Outlined.NoCell, contentDescription = "No items")
+                                 Text(
+                                     text = "Нет дз",
+                                     color = Color.Gray
+                                 )
+                             }
+                             ElevatedButton(onClick = { navController.navigate("details")}) {
+                                 Text("Нажмите чтобы добавить")
+                             }
                          }
 
                      }
