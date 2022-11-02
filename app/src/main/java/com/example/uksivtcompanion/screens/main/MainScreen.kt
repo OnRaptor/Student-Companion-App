@@ -46,7 +46,7 @@ fun MainScreen(
         Box(modifier = Modifier.weight(1f)) {
             NavHost(
                 navController = childNavController,
-                startDestination = MainBottomScreen.Diary.route
+                startDestination = MainBottomScreen.Home.route
             ) {
                 homeFlow(childNavController)
                 scheduleFlow(childNavController)

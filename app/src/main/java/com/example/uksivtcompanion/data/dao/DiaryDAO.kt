@@ -6,20 +6,23 @@ import com.example.uksivtcompanion.data.entities.Diary
 @Dao
 interface DiaryDAO {
     @Query("SELECT * FROM diary")
-    fun getAll():List<Diary>
+    suspend fun getAll():List<Diary>
 
     @Query("SELECT * FROM diary WHERE date LIKE :dateToFind")
-    fun getAllByDate(dateToFind:String): List<Diary>
+    suspend fun getAllByDate(dateToFind:String): List<Diary>
 
     @Query("SELECT * FROM diary WHERE uid LIKE :uid")
-    fun findByUID(uid:String): Diary?
+    suspend fun findByUID(uid:String): Diary?
+
+    @Query("SELECT DISTINCT date FROM diary")
+    suspend fun getAllDates() : List<String>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(entity: Diary)
+    suspend fun update(entity: Diary)
 
     @Insert
-    fun insertAll(vararg diaries:Diary)
+    suspend fun insertAll(vararg diaries:Diary)
 
     @Delete
-    fun delete(diary: Diary)
+    suspend fun delete(diary: Diary)
 }

@@ -23,7 +23,6 @@ class RoomModule {
             "diary_date_base"
         )
             .fallbackToDestructiveMigration()
-            .allowMainThreadQueries()
             .build()
 
     @Provides

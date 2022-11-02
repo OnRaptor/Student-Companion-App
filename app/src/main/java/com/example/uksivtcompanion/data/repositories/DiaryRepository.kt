@@ -4,6 +4,8 @@ import androidx.compose.runtime.mutableStateOf
 import com.example.uksivtcompanion.data.dao.DiaryDAO
 import com.example.uksivtcompanion.data.entities.Diary
 import com.example.uksivtcompanion.data.entities.DiaryItem
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 class DiaryRepository @Inject constructor(
@@ -49,6 +51,15 @@ class DiaryRepository @Inject constructor(
             record.date
         ))
     }
+
+    suspend fun getDiaryDates(): List<Date> =
+        diaryDAO
+            .getAllDates()
+            .map { SimpleDateFormat("dd.MM.yyyy",Locale.getDefault()).parse(it) ?: Date() }
+        /*diaryDAO.getAll().map { it.date }.distinct()
+            .map { SimpleDateFormat("dd.MM.yyyy",Locale.getDefault()).parse(it) ?: Date() }*/
+
+
 
     suspend fun findByUID(uid:String) : Diary{
         return diaryDAO.findByUID(uid) ?: throw NoSuchElementException()

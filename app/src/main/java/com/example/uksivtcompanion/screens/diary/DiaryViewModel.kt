@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
 import javax.inject.Inject
@@ -25,7 +24,8 @@ class DiaryViewModel @Inject constructor(
     private val diaryRepository: DiaryRepository
 ) : ViewModel(), EventHandler<DiaryEvent>{
 
-    private var currentDate = Calendar.getInstance()
+    private var dateIterator:Int = 0
+    private lateinit var possibleDates:MutableList<Date>
     private val formatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
     private val _diaryViewState: MutableLiveData<DiaryViewState> = MutableLiveData(DiaryViewState.Loading)
     val diaryViewState: LiveData<DiaryViewState> = _diaryViewState
@@ -42,7 +42,7 @@ class DiaryViewModel @Inject constructor(
 
     private fun reduce(event : DiaryEvent, currentState: DiaryViewState.Loading){
         when(event) {
-            DiaryEvent.EnterScreen -> fetchDiariesForDate()
+            DiaryEvent.EnterScreen -> updateData()
             else -> {}
         }
     }
@@ -63,7 +63,7 @@ class DiaryViewModel @Inject constructor(
 
     private fun reduce(event : DiaryEvent, currentState: DiaryViewState.NoItems){
         when (event) {
-            DiaryEvent.EnterScreen -> fetchDiariesForDate()
+            DiaryEvent.EnterScreen -> updateData()
             DiaryEvent.NextDayClicked -> performNextClick()
             DiaryEvent.PreviousDayClicked -> performPreviousClick()
             is DiaryEvent.OnDiaryClicked -> performDiaryClick(event.uid)
@@ -77,19 +77,29 @@ class DiaryViewModel @Inject constructor(
                 uid = uid.ifEmpty { UUID.randomUUID().toString() },
                 title = mutableStateOf(""),
                 text = mutableStateOf(""),
-                date = mutableStateOf(formatter.format(currentDate.time))
+                date = mutableStateOf(formatter.format(possibleDates[dateIterator]))
             ))
             _diaryViewState.postValue(DiaryViewState.Loading)
         }
     }
 
     private fun performNextClick() {
-        currentDate.add(Calendar.DAY_OF_MONTH, 1)
+        try {
+            possibleDates[dateIterator + 1]
+        } catch (e: java.lang.IndexOutOfBoundsException){
+            return
+        }
+        dateIterator++
         fetchDiariesForDate()
     }
 
     private fun performPreviousClick() {
-        currentDate.add(Calendar.DAY_OF_MONTH, -1)
+        try {
+            possibleDates[dateIterator - 1]
+        } catch (e: java.lang.IndexOutOfBoundsException){
+            return
+        }
+        dateIterator--
         fetchDiariesForDate()
     }
 
@@ -101,10 +111,18 @@ class DiaryViewModel @Inject constructor(
         }
     }
 
+    private fun updateData(){
+        viewModelScope.launch {
+            possibleDates = diaryRepository.getDiaryDates().toMutableList()
+            if (possibleDates.size == 0)
+                possibleDates.add(Date())
+            fetchDiariesForDate()
+        }
+    }
 
     private fun getTitleForCurrentDay(): String {
         val today = LocalDateTime.ofInstant(Calendar.getInstance().time.toInstant(), ZoneId.systemDefault())
-        val target = LocalDateTime.ofInstant(currentDate.time.toInstant(), ZoneId.systemDefault())
+        val target = LocalDateTime.ofInstant(possibleDates[dateIterator].toInstant(), ZoneId.systemDefault())
         val difference = ChronoUnit.DAYS.between(today, target)
 
         if (today.dayOfMonth - target.dayOfMonth == -1)
@@ -113,12 +131,12 @@ class DiaryViewModel @Inject constructor(
         return when (difference) {
             0L -> "Сегодня"
             -1L -> "Вчера"
-            else -> formatter.format(currentDate.time)
+            else -> formatter.format(possibleDates[dateIterator])
         }
     }
 
     private fun fetchDiariesForDate(
-        date:String = formatter.format(currentDate.time)
+        date:String = formatter.format(possibleDates[dateIterator])
     )
     {
         viewModelScope.launch {
