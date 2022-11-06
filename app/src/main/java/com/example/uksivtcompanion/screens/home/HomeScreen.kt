@@ -1,5 +1,9 @@
 package com.example.uksivtcompanion.screens.home
 
+import android.app.AlertDialog
+import android.content.DialogInterface
+import android.net.Uri
+import android.widget.ImageView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -11,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -22,32 +27,48 @@ import com.example.uksivtcompanion.screens.components.DateSwitchInline
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(){
-    Column(modifier = Modifier
-        .verticalScroll(rememberScrollState())
-        .fillMaxHeight(),
-        verticalArrangement = Arrangement.SpaceBetween
-    ){
-        val (isDialogShow, setDialogShow) = remember {
-            mutableStateOf(false)
-        }
+    val (isDialogShow, setDialogShow) = remember {
+        mutableStateOf(false)
+    }
+    val wise_mystical_tree = ImageView(LocalContext.current)
+    wise_mystical_tree.setImageResource(R.drawable.wise)
+
+    val EasterEgg = AlertDialog.Builder(LocalContext.current)
+        .setTitle("Пасхалка")
+        .setPositiveButton("Ашалеть", null)
+        .setView(wise_mystical_tree)
+        .create()
+
+    Column() {
         TopAppBar(
             title = { Text("Student Companion") },
-            navigationIcon = { Icon(Icons.Default.Home, contentDescription = "") },
+            navigationIcon = {
+                IconButton(onClick = {
+                    EasterEgg.show()
+            }) {
+                Icon(Icons.Default.Home, contentDescription = "")
+            } },
             actions = {
                 IconButton(onClick = { setDialogShow(true) }) {
-                Icon(Icons.Filled.Settings,"")
-            }
+                    Icon(Icons.Filled.Settings,"")
+                }
             }
         )
-        //Spacer(modifier = Modifier.height(25.dp))
-        ScheduleWidget()
-        //Spacer(modifier = Modifier.height(25.dp))
-        DiaryWidget()
-        //Spacer(modifier = Modifier.height(25.dp))
-        ReplacesWidget()
-        //Spacer(modifier = Modifier.height(25.dp))
-        if (isDialogShow)
-            SettingsDialog(setDialogShow)
+        Column(modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .fillMaxHeight(0.9f),
+            verticalArrangement = Arrangement.SpaceBetween
+        ){
+            //Spacer(modifier = Modifier.height(25.dp))
+            ScheduleWidget()
+            //Spacer(modifier = Modifier.height(25.dp))
+            DiaryWidget()
+            //Spacer(modifier = Modifier.height(25.dp))
+            ReplacesWidget()
+            //Spacer(modifier = Modifier.height(25.dp))
+            if (isDialogShow)
+                SettingsDialog(setDialogShow)
+        }
     }
 }
 

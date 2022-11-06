@@ -10,18 +10,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ScheduleViewNoData(){
+fun ScheduleViewNoData(
+    onCreateCallback: () -> Unit
+){
     Box(Modifier.fillMaxSize()){
         Column(modifier = Modifier
             .align(Alignment.Center)
-            .width(200.dp)) {
-            Text("Нет расписания😒")
-            Button(onClick = { /*TODO*/ }) {
-                Text("Создать расписание")
+            .width(200.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Нет расписания")
+            Button(onClick = onCreateCallback) {
+                Text("Создать")
             }
             Spacer(modifier = Modifier.height(10.dp))
             OutlinedButton(onClick = { /*TODO*/ }) {
-                Text("Импортировать расписание")
+                Text("Импорт")
             }
         }
     }

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.example.uksivtcompanion.screens.schedule.models.ScheduleEvent
 import com.example.uksivtcompanion.screens.schedule.models.ScheduleViewState
 import com.example.uksivtcompanion.screens.schedule.views.ScheduleViewDisplay
+import com.example.uksivtcompanion.screens.schedule.views.ScheduleViewEditing
 import com.example.uksivtcompanion.screens.schedule.views.ScheduleViewLoading
 import com.example.uksivtcompanion.screens.schedule.views.ScheduleViewNoData
 
@@ -27,7 +28,8 @@ fun ScheduleScreen(viewModel: ScheduleViewModel){
     val viewState = viewModel.scheduleViewState.observeAsState()
     when(val state = viewState.value){
         ScheduleViewState.Loading -> ScheduleViewLoading()
-        ScheduleViewState.NoData -> ScheduleViewNoData()
+        ScheduleViewState.NoData -> ScheduleViewNoData { viewModel.obtainEvent(event = ScheduleEvent.EditTimeSheet) }
+        ScheduleViewState.Editing -> ScheduleViewEditing { viewModel.obtainEvent(event = ScheduleEvent.EnterScreen) }
         is ScheduleViewState.Display -> ScheduleViewDisplay(viewModel)
         else -> Text("Unmatched state")
     }

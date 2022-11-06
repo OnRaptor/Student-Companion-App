@@ -35,25 +35,13 @@ fun UksivtCompanionTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val useDynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-
-    val colors = when {
-        useDynamicColor && useDarkTheme ->
-            dynamicDarkColorScheme(LocalContext.current)
-        useDynamicColor && !useDarkTheme ->
-            dynamicLightColorScheme(LocalContext.current)
-        useDarkTheme -> DarkColorPalette
-        else -> LightColorPalette
-    }
-
-        /*if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }*/
 
     MaterialTheme(
-        colorScheme = colors,
+        colorScheme = if (useDarkTheme) {
+            DarkColorPalette
+        } else {
+            LightColorPalette
+        },
         typography = Typography,
         content = content
     )

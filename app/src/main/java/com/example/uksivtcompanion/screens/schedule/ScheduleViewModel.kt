@@ -24,6 +24,8 @@ class ScheduleViewModel @Inject constructor(
         when (val currentState = _scheduleViewState.value) {
             is ScheduleViewState.Loading -> reduce(event, currentState)
             is ScheduleViewState.Display -> reduce(event, currentState)
+            is ScheduleViewState.NoData  -> reduce(event, currentState)
+            is ScheduleViewState.Editing  -> reduce(event, currentState)
             else -> {}
         }
     }
@@ -41,6 +43,24 @@ class ScheduleViewModel @Inject constructor(
             ScheduleEvent.NextDayClicked -> performNextClick()
             ScheduleEvent.PreviousDayClicked -> performPreviousClick()
             else -> {}
+        }
+    }
+    private fun reduce(event : ScheduleEvent, currentState: ScheduleViewState.NoData){
+        when (event) {
+            ScheduleEvent.EditTimeSheet -> performEditTimeSheetClick()
+            else -> {}
+        }
+    }
+    private fun reduce(event : ScheduleEvent, currentState: ScheduleViewState.Editing){
+        when (event) {
+            ScheduleEvent.EnterScreen -> getLessonsForDay()
+            else -> {}
+        }
+    }
+
+    private fun performEditTimeSheetClick(){
+        viewModelScope.launch {
+            _scheduleViewState.postValue(ScheduleViewState.Editing)
         }
     }
 

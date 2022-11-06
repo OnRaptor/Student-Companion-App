@@ -8,4 +8,5 @@ sealed class ScheduleViewState {
         val schedule : Schedule
     ) : ScheduleViewState()
     object NoData : ScheduleViewState()
+    object Editing : ScheduleViewState()
 }

@@ -25,8 +25,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            UksivtCompanionTheme() {
-                val scope = rememberCoroutineScope()
+            UksivtCompanionTheme(false){
                 val navController = rememberNavController()
                 Surface {
                     NavHost(navController = navController, startDestination = "main") {
