@@ -1,9 +1,7 @@
 package com.example.uksivtcompanion.screens.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Home
@@ -13,15 +11,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
+import com.example.uksivtcompanion.screens.home.SettingsDialog
 import com.example.uksivtcompanion.screens.main.tabs.diaryFlow
 import com.example.uksivtcompanion.screens.main.tabs.homeFlow
 import com.example.uksivtcompanion.screens.main.tabs.scheduleFlow
@@ -34,13 +39,13 @@ fun MainScreen(
     navController: NavController
 ) {
     val childNavController = rememberNavController()
-
     // Navigation Items
     val items = listOf(
         MainBottomScreen.Home,
         MainBottomScreen.Schedule,
         MainBottomScreen.Diary
     )
+
 
     Column {
         Box(modifier = Modifier.weight(1f)) {
@@ -51,9 +56,45 @@ fun MainScreen(
                 homeFlow(childNavController)
                 scheduleFlow(childNavController)
                 diaryFlow(childNavController)
+                dialog("Alert?m={message}", dialogProperties = DialogProperties(true, true)){
+                    Card(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .padding(10.dp, 0.dp, 10.dp, 0.dp),
+                        shape = ShapeDefaults.ExtraLarge,
+                        elevation = CardDefaults.elevatedCardElevation()
+                    ) {
+                        Box(Modifier.fillMaxSize()){
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(text = "Alert",
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.Red
+                                )
+                                Divider()
+                                Text(text = it.arguments?.getString("message")!!)
+                            }
+                            TextButton(
+                                onClick = {navController.popBackStack()},
+                                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)
+                            ) {
+                                Text("OK")
+                            }
+                        }
+                    }
+                }
+
+                dialog("Settings", dialogProperties = DialogProperties(true, true)){
+                    SettingsDialog(navController)
+                }
+                dialog("Import"){
+                    Card(Modifier.fillMaxWidth()){
+                        Text("Import is not created yet", modifier = Modifier.padding(10.dp))
+                    }
+                }
             }
         }
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()

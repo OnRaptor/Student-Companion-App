@@ -20,16 +20,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.uksivtcompanion.R
 import com.example.uksivtcompanion.screens.components.DateSwitchInline
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(){
-    val (isDialogShow, setDialogShow) = remember {
-        mutableStateOf(false)
-    }
+fun HomeScreen(navController: NavController){
     val wise_mystical_tree = ImageView(LocalContext.current)
     wise_mystical_tree.setImageResource(R.drawable.wise)
 
@@ -39,7 +37,7 @@ fun HomeScreen(){
         .setView(wise_mystical_tree)
         .create()
 
-    Column() {
+    Column {
         TopAppBar(
             title = { Text("Student Companion") },
             navigationIcon = {
@@ -49,7 +47,7 @@ fun HomeScreen(){
                 Icon(Icons.Default.Home, contentDescription = "")
             } },
             actions = {
-                IconButton(onClick = { setDialogShow(true) }) {
+                IconButton(onClick = { navController.navigate("Settings") }) {
                     Icon(Icons.Filled.Settings,"")
                 }
             }
@@ -66,8 +64,6 @@ fun HomeScreen(){
             //Spacer(modifier = Modifier.height(25.dp))
             ReplacesWidget()
             //Spacer(modifier = Modifier.height(25.dp))
-            if (isDialogShow)
-                SettingsDialog(setDialogShow)
         }
     }
 }

@@ -33,7 +33,7 @@ fun DetailsView(
             .fillMaxHeight(),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        val isEditingTitle = rememberSaveable() {
+        val isEditingTitle = rememberSaveable {
             mutableStateOf(item.title.value == "")
         }
         TopAppBar(

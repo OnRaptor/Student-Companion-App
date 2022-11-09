@@ -17,6 +17,7 @@ fun NavGraphBuilder.homeFlow(
     navigation(startDestination = "home", route = MainBottomScreen.Home.route) {
         composable("home") {
             HomeScreen(
+                navController
             )
         }
 

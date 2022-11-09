@@ -1,4 +1,4 @@
-package com.example.uksivtcompanion.di;
+package com.example.uksivtcompanion.di
 
 import android.content.Context
 import com.example.uksivtcompanion.data.dao.ScheduleDAO

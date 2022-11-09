@@ -21,7 +21,7 @@ fun DiariesView(
     diaries: List<DiaryItem>,
     onLongTapCallback:(uid:String)->Unit
 ){
-        LazyColumn() {
+        LazyColumn {
             diaries.forEach { diaryItem ->
                 item {
                     DiaryView(
