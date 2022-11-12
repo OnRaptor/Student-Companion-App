@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Diary (
-        @PrimaryKey val uid: String,
+        @PrimaryKey var uid: String,
         @ColumnInfo(name = "title") val title:String,
         @ColumnInfo(name = "desc") val desc:String,
         @ColumnInfo(name = "date") val date:String,

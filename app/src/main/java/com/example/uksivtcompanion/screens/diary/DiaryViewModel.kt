@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.uksivtcompanion.data.entities.DiaryItem
+import com.example.uksivtcompanion.data.entities.Diary
 import com.example.uksivtcompanion.data.repositories.DiaryRepository
 import com.example.uksivtcompanion.screens.diary.models.DiaryEvent
 import com.example.uksivtcompanion.screens.diary.models.DiaryViewState
@@ -36,6 +36,7 @@ class DiaryViewModel @Inject constructor(
             is DiaryViewState.Display -> reduce(event, currentState)
             is DiaryViewState.Error -> reduce(event, currentState)
             is DiaryViewState.NoItems -> reduce(event, currentState)
+            is DiaryViewState.Details -> reduce(event, currentState)
             else -> {}
         }
     }
@@ -51,8 +52,19 @@ class DiaryViewModel @Inject constructor(
         when (event) {
             DiaryEvent.NextDayClicked -> performNextClick()
             DiaryEvent.PreviousDayClicked -> performPreviousClick()
+            DiaryEvent.OnEraseAllClicked -> performEraseAllClick()
             is DiaryEvent.OnDiaryClicked -> performDiaryClick(event.uid)
             is DiaryEvent.OnDeleteClicked -> performDeleteClick(event.uid)
+            else -> {}
+        }
+    }
+
+    private fun reduce(event : DiaryEvent, currentState: DiaryViewState.Details){
+        when (event) {
+            is DiaryEvent.OnDiaryClicked -> performDiaryClick(event.uid)
+            is DiaryEvent.OnDeleteClicked -> performDeleteClick(event.uid)
+            is DiaryEvent.OnSaveClicked -> performSaveClick(event.item)
+            DiaryEvent.EnterScreen -> updateData()
             else -> {}
         }
     }
@@ -73,13 +85,28 @@ class DiaryViewModel @Inject constructor(
 
     private fun performDiaryClick(uid:String) {
         viewModelScope.launch {
-            diaryRepository.addOrUpdateDiary(DiaryItem(
-                uid = uid.ifEmpty { UUID.randomUUID().toString() },
-                title = mutableStateOf(""),
-                text = mutableStateOf(""),
-                date = mutableStateOf(formatter.format(possibleDates[dateIterator]))
-            ))
-            _diaryViewState.postValue(DiaryViewState.Loading)
+            lateinit var record: Diary
+            try {
+                record = diaryRepository.findByUID(uid)
+            }
+            catch (_:NoSuchElementException){
+                record = Diary(
+                    uid = UUID.randomUUID().toString(),
+                    title = "",
+                    desc = "",
+                    date = formatter.format(possibleDates[dateIterator])
+                )
+                diaryRepository.addOrUpdateDiary(
+                    record
+                )
+            }
+            _diaryViewState.postValue(DiaryViewState.Details(record.uid))
+        }
+    }
+    private fun performEraseAllClick() {
+        viewModelScope.launch {
+            diaryRepository.eraseAll()
+            updateData()
         }
     }
 
@@ -108,6 +135,13 @@ class DiaryViewModel @Inject constructor(
             val record = diaryRepository.findByUID(uid)
             diaryRepository.deleteDiary(uid)
             fetchDiariesForDate(record.date)
+        }
+    }
+
+    private fun performSaveClick(item:Diary){
+        viewModelScope.launch {
+            diaryRepository.addOrUpdateDiary(item)
+            updateData()
         }
     }
 

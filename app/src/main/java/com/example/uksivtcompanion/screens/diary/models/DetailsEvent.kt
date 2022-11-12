@@ -1,4 +1,4 @@
-package com.example.uksivtcompanion.screens.diarydetails.models
+package com.example.uksivtcompanion.screens.diary.models
 
 sealed class DetailsEvent {
     data class EnterScreen(val uid: String) : DetailsEvent()

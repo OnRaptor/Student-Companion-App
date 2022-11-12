@@ -10,17 +10,14 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.navigation.NavController
-import java.util.UUID
+import java.util.*
 
 @Composable
 fun DiaryViewNoItems(
-    navController:NavController,
     OnDiaryClick:(uid:String)->Unit
 ){
     Box(Modifier.fillMaxSize()){
@@ -36,7 +33,6 @@ fun DiaryViewNoItems(
             ElevatedButton(onClick = {
                 val uid = UUID.randomUUID().toString()
                 OnDiaryClick(uid)
-                navController.navigate("details/$uid")
             }) {
                 Text("Нажмите чтобы добавить")
             }

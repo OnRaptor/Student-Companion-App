@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -16,11 +17,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
+import androidx.navigation.compose.rememberNavController
 import com.example.uksivtcompanion.data.entities.Lesson
 
 class LessonItemUiState (name:String = "", cab:String = "", time:String=""){
@@ -182,36 +189,9 @@ fun CreateLessonItemDialog(
                 fontWeight = FontWeight.Bold,
                 fontSize = 17.sp
             )
-            TextField(
-                value = item.Name.value,
-                onValueChange = { value -> item.Name.value = value },
-                singleLine = true,
-                supportingText = { Text(text = "Название предмета")},
-                placeholder = { Text("Математика") },
-                modifier = Modifier
-                    .padding(4.dp)
-                    .fillMaxWidth()
-            )
-            TextField(
-                value = item.Cab.value,
-                onValueChange = { value -> item.Cab.value = value },
-                singleLine = true,
-                supportingText = { Text(text = "Кабинет")},
-                placeholder = { Text("231") },
-                modifier = Modifier
-                    .padding(4.dp)
-                    .fillMaxWidth()
-            )
-            TextField(
-                value = item.Time.value,
-                onValueChange = { value -> item.Time.value = value },
-                singleLine = true,
-                supportingText = { Text(text = "Время") },
-                placeholder = { Text("11:15-12:45") },
-                modifier = Modifier
-                    .padding(4.dp)
-                    .fillMaxWidth()
-            )
+            CorrectTextField(item.Name.value, "Название") { value -> item.Name.value = value }
+            CorrectTextField(item.Cab.value, "Кабинет", keyboardType = KeyboardType.Number) { value -> item.Cab.value = value }
+            CorrectTextField(item.Time.value, "Время", keyboardType = KeyboardType.Number) { value -> item.Time.value = value }
             TextButton(modifier = Modifier
                 .padding(4.dp)
                 .fillMaxWidth(), onClick = { onConfirm(item) }) {
@@ -248,36 +228,9 @@ fun EditLessonItemDialog(
                 fontWeight = FontWeight.Bold,
                 fontSize = 17.sp
             )
-            TextField(
-                value = item.Name.value,
-                onValueChange = { value -> item.Name.value = value },
-                singleLine = true,
-                supportingText = { Text(text = "Название предмета")},
-                placeholder = { Text("Математика") },
-                modifier = Modifier
-                    .padding(4.dp)
-                    .fillMaxWidth()
-            )
-            TextField(
-                value = item.Cab.value,
-                onValueChange = { value -> item.Cab.value = value },
-                singleLine = true,
-                supportingText = { Text(text = "Кабинет")},
-                placeholder = { Text("231") },
-                modifier = Modifier
-                    .padding(4.dp)
-                    .fillMaxWidth()
-            )
-            TextField(
-                value = item.Time.value,
-                onValueChange = { value -> item.Time.value = value },
-                singleLine = true,
-                supportingText = { Text(text = "Время") },
-                placeholder = { Text("11:15-12:45") },
-                modifier = Modifier
-                    .padding(4.dp)
-                    .fillMaxWidth()
-            )
+            CorrectTextField(item.Name.value, "Название") { value -> item.Name.value = value }
+            CorrectTextField(item.Cab.value, "Кабинет", keyboardType = KeyboardType.Number) { value -> item.Cab.value = value }
+            CorrectTextField(item.Time.value, "Время", keyboardType = KeyboardType.Number) { value -> item.Time.value = value }
             TextButton(
                 modifier = Modifier
                     .padding(4.dp)
@@ -297,9 +250,22 @@ fun EditLessonItemDialog(
 
 }
 
-fun getRandomString(length: Int) : String {
-    val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
-    return (1..length)
-        .map { allowedChars.random() }
-        .joinToString("")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CorrectTextField(v:String, supportText:String, keyboardType: KeyboardType = KeyboardType.Text, onValueChangeCallback:(value:String) -> Unit){
+    TextField(
+        value = v,
+        onValueChange = onValueChangeCallback,
+        singleLine = true,
+        supportingText = { Text(text = supportText)},
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(
+            KeyboardCapitalization.Words,
+            true,
+            keyboardType,
+            imeAction = ImeAction.Next
+        )
+    )
 }

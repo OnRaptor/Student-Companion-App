@@ -14,7 +14,7 @@ interface DiaryDAO {
     @Query("SELECT * FROM diary WHERE uid LIKE :uid")
     suspend fun findByUID(uid:String): Diary?
 
-    @Query("SELECT DISTINCT date FROM diary")
+    @Query("SELECT DISTINCT date FROM diary ORDER BY date")
     suspend fun getAllDates() : List<String>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
@@ -22,6 +22,9 @@ interface DiaryDAO {
 
     @Insert
     suspend fun insertAll(vararg diaries:Diary)
+
+    @Query("DELETE FROM diary")
+    suspend fun eraseTable()
 
     @Delete
     suspend fun delete(diary: Diary)

@@ -13,4 +13,7 @@ sealed class DiaryViewState {
     data class NoItems(
         val date: MutableState<String>
     ) : DiaryViewState()
+    data class Details(
+        val uid:String
+    ) : DiaryViewState()
 }

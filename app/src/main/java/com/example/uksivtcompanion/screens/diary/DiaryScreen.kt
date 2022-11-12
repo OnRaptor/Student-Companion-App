@@ -1,13 +1,11 @@
 package com.example.uksivtcompanion.screens.diary
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.NoCell
-import androidx.compose.material.icons.filled.NotAccessible
-import androidx.compose.material.icons.outlined.NoBackpack
-import androidx.compose.material.icons.outlined.NoCell
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -15,19 +13,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.uksivtcompanion.screens.components.DateSwitch
 import com.example.uksivtcompanion.screens.diary.models.DiaryEvent
 import com.example.uksivtcompanion.screens.diary.models.DiaryViewState
 import com.example.uksivtcompanion.screens.diary.views.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Composable
 fun DiaryScreen(navController: NavController,
@@ -47,7 +40,6 @@ fun DiaryScreen(navController: NavController,
             )
             {
                 DiaryViewNoItems(
-                    navController = navController,
                     OnDiaryClick = { uid -> viewModel.obtainEvent(DiaryEvent.OnDiaryClicked(uid)) }
                 )
             }
@@ -56,8 +48,15 @@ fun DiaryScreen(navController: NavController,
         is DiaryViewState.Display -> {
             DiaryViewDisplay(
                 state = state,
-                viewModel = viewModel,
-                navController = navController
+                viewModel = viewModel
+            )
+        }
+        is DiaryViewState.Details -> {
+            DetailsView(
+                state.uid,
+                onSaveClick = { item -> viewModel.obtainEvent(DiaryEvent.OnSaveClicked(item)) },
+                onDeleteClick = { viewModel.obtainEvent(DiaryEvent.OnDeleteClicked(state.uid)) },
+                onBackClick = { viewModel.obtainEvent(event = DiaryEvent.EnterScreen) }
             )
         }
         else -> {}

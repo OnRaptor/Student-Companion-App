@@ -1,6 +1,5 @@
-package com.example.uksivtcompanion.screens.diarydetails.models
+package com.example.uksivtcompanion.screens.diary.models
 
-import androidx.compose.runtime.MutableState
 import com.example.uksivtcompanion.data.entities.DiaryItem
 
 

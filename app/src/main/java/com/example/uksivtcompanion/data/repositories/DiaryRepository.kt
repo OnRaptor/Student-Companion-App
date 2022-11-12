@@ -41,6 +41,23 @@ class DiaryRepository @Inject constructor(
             ))
     }
 
+    suspend fun addOrUpdateDiary(diary:Diary){
+        if (diaryDAO.findByUID(diary.uid) == null)
+            diaryDAO.insertAll(Diary(
+                diary.uid,
+                diary.title,
+                diary.desc,
+                diary.date
+            ))
+        else
+            diaryDAO.update(Diary(
+                diary.uid,
+                diary.title,
+                diary.desc,
+                diary.date
+            ))
+    }
+
 
     suspend fun deleteDiary(uid: String){
         val record = findByUID(uid)
@@ -56,12 +73,13 @@ class DiaryRepository @Inject constructor(
         diaryDAO
             .getAllDates()
             .map { SimpleDateFormat("dd.MM.yyyy",Locale.getDefault()).parse(it) ?: Date() }
-        /*diaryDAO.getAll().map { it.date }.distinct()
-            .map { SimpleDateFormat("dd.MM.yyyy",Locale.getDefault()).parse(it) ?: Date() }*/
+
 
 
 
     suspend fun findByUID(uid:String) : Diary{
         return diaryDAO.findByUID(uid) ?: throw NoSuchElementException()
     }
+
+    suspend fun eraseAll() = diaryDAO.eraseTable()
 }
