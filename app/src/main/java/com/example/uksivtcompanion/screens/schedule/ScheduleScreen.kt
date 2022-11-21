@@ -37,7 +37,10 @@ fun ScheduleScreen(viewModel: ScheduleViewModel,
     val dayState = rememberSaveable{ mutableStateOf("") }
     when(val state = viewState.value){
         ScheduleViewState.Loading -> ScheduleViewLoading()
-        ScheduleViewState.NoData -> ScheduleViewNoData { viewModel.obtainEvent(event = ScheduleEvent.EditTimeSheet) }
+        ScheduleViewState.NoData -> ScheduleViewNoData(
+            { viewModel.obtainEvent(event = ScheduleEvent.EditTimeSheet) },
+            { viewModel.obtainEvent(event = ScheduleEvent.Import(it)) }
+        )
         is ScheduleViewState.Editing ->
             ScheduleViewEditing(
                 state.lessons,
@@ -60,9 +63,8 @@ fun ScheduleScreen(viewModel: ScheduleViewModel,
                     )
                     viewModel.obtainEvent(event = ScheduleEvent.DeleteAll)
                 },
-                {
-                    navController.navigate("Import")
-                }
+                { viewModel.obtainEvent(event = ScheduleEvent.Import(it)) },
+                { viewModel.obtainEvent(event = ScheduleEvent.Export(it)) }
             )
         }
         else -> Text("Unmatched state")

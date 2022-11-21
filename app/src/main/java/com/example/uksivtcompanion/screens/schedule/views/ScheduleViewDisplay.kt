@@ -1,5 +1,9 @@
 package com.example.uksivtcompanion.screens.schedule.views
 
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,6 +14,9 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -18,6 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.Lifecycle
 import com.example.uksivtcompanion.data.entities.Lesson
 import com.example.uksivtcompanion.screens.components.DateSwitch
 
@@ -31,8 +41,19 @@ fun ScheduleViewDisplay(
     onEditClick: () -> Unit,
     onCreateClick: () -> Unit,
     onDeleteAllClick: () -> Unit,
-    onImportClick: () -> Unit
+    onImportClick: (inputFile:String) -> Unit,
+    onExportClick: (outDir:String) -> Unit
 ){
+    val (showDialog, setDialog) = remember{ mutableStateOf(false) }
+
+    val launcherForExportChooser = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) {
+            uri -> onExportClick(uri?.toString() ?: return@rememberLauncherForActivityResult)
+    }
+
+    val launcherForImportChooser = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { onImportClick(it.toString()) }
+    }
+
     Box(modifier = Modifier.fillMaxSize()){
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             TopAppBar(
@@ -44,9 +65,8 @@ fun ScheduleViewDisplay(
                     IconButton(onClick = onDeleteAllClick) {
                         Icon(Icons.Filled.DeleteSweep, "")
                     }
-                    IconButton(onClick = onImportClick) {
-                        Icon(Icons.Filled.Upload, "",
-                            modifier = Modifier.rotate(180f))//xddd
+                    IconButton(onClick = { setDialog(true) }) {
+                        Icon(Icons.Filled.ImportExport, "")
                     }
                 }
             )
@@ -74,7 +94,48 @@ fun ScheduleViewDisplay(
                 Icon(Icons.Filled.Edit, "")
         }
     }
-
+    if (showDialog)
+        Dialog(onDismissRequest = { setDialog(false) }) {
+            Card(
+                Modifier
+                    .fillMaxWidth()){
+                Text(
+                    "Импорт/Экспорт",
+                    fontSize = 19.sp,
+                    modifier = Modifier.padding(5.dp),
+                    color = Color.Black
+                )
+                Divider()
+                Column(modifier = Modifier
+                    .padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    OutlinedButton(onClick = {
+                        launcherForImportChooser.launch("application/json")
+                    }) {
+                        Text("Импорт")
+                    }
+                    Text("Вам нужно будет выбрать файл импорта",
+                        color = Color.Gray,
+                        fontSize = 12.sp
+                    )
+                    Divider(Modifier.padding(5.dp))
+                    Button(onClick = {
+                        launcherForExportChooser.launch(null)
+                    }) {
+                        Text("Экспорт")
+                    }
+                    Text(
+                        "Вам нужно будет выбрать директорию где будет сохранен экспортируемый файл",
+                        color = Color.Gray,
+                        fontSize = 12.sp
+                    )
+                    TextButton(onClick = { setDialog(false) }, modifier = Modifier.fillMaxWidth()) {
+                        Text("Отмена")
+                    }
+                }
+            }
+        }
 }
 
 

@@ -1,5 +1,7 @@
 package com.example.uksivtcompanion.screens.schedule.views
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
@@ -11,8 +13,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ScheduleViewNoData(
-    onCreateCallback: () -> Unit
+    onCreateCallback: () -> Unit,
+    onImportCallback: (inputFile:String) -> Unit
 ){
+    val launcherForImportChooser = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { onImportCallback(it.toString()) }
+    }
+
     Box(Modifier.fillMaxSize()){
         Column(modifier = Modifier
             .align(Alignment.Center)
@@ -24,7 +31,9 @@ fun ScheduleViewNoData(
                 Text("Создать")
             }
             Spacer(modifier = Modifier.height(10.dp))
-            OutlinedButton(onClick = { /*TODO*/ }) {
+            OutlinedButton(onClick = {
+                launcherForImportChooser.launch("application/json")
+            }) {
                 Text("Импорт")
             }
         }

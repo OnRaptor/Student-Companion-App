@@ -1,5 +1,6 @@
 package com.example.uksivtcompanion.screens.schedule.models
 
+import android.net.Uri
 import com.example.uksivtcompanion.data.entities.Lesson
 
 sealed class ScheduleEvent {
@@ -8,7 +9,8 @@ sealed class ScheduleEvent {
     object NextDayClicked : ScheduleEvent()
     object CreateClicked : ScheduleEvent()
     object DeleteAll : ScheduleEvent()
-    object Import : ScheduleEvent()
+    data class Import(val inputFile:String) : ScheduleEvent()
+    data class Export(val outDir:String) : ScheduleEvent()
     object EditTimeSheet : ScheduleEvent()
     data class UpdateTimeSheet(
         val lessons: List<Lesson>

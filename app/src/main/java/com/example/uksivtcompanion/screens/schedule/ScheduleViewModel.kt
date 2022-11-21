@@ -1,5 +1,9 @@
 package com.example.uksivtcompanion.screens.schedule
 
+import android.net.Uri
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -53,7 +57,6 @@ class ScheduleViewModel @Inject constructor(
             else -> {}
         }
     }
-
     private fun reduce(event : ScheduleEvent, currentState: ScheduleViewState.Display){
         when (event) {
             ScheduleEvent.NextDayClicked -> performNextClick()
@@ -61,12 +64,15 @@ class ScheduleViewModel @Inject constructor(
             ScheduleEvent.EditTimeSheet -> performEditTimeSheetClick()
             ScheduleEvent.CreateClicked -> performEditTimeSheetClick()
             ScheduleEvent.DeleteAll -> performDeleteAllClick()
+            is ScheduleEvent.Import -> performImportClick(event.inputFile)
+            is ScheduleEvent.Export -> performExportClick(event.outDir)
             else -> {}
         }
     }
     private fun reduce(event : ScheduleEvent, currentState: ScheduleViewState.NoData){
         when (event) {
             ScheduleEvent.EditTimeSheet -> performEditTimeSheetClick()
+            is ScheduleEvent.Import -> performImportClick(event.inputFile)
             else -> {}
         }
     }
@@ -75,6 +81,20 @@ class ScheduleViewModel @Inject constructor(
             ScheduleEvent.EnterScreen -> fetchTimeSheet()
             is ScheduleEvent.UpdateTimeSheet -> updateTimeSheet(event.lessons)
             else -> {}
+        }
+    }
+
+    private fun performImportClick(inputFile:String){
+        viewModelScope.launch {
+            scheduleDAO.importFile(inputFile)
+            fetchTimeSheet()
+        }
+    }
+
+    private fun performExportClick(outDir:String){
+        viewModelScope.launch {
+            scheduleDAO.setSchedule(schedule)
+            scheduleDAO.exportFile(outDir)
         }
     }
 
